@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Examen_Ing_Web_Lowell.Models;
+
 
 namespace Examen_Ing_Web_Lowell.Controllers
 {
@@ -12,36 +14,70 @@ namespace Examen_Ing_Web_Lowell.Controllers
     [ApiController]
     public class ContactosController : ControllerBase
     {
+        ContactosRepositorio repositorio;
+        public ContactosController()
+        {
+            repositorio = new ContactosRepositorio();
+        }
+
         // GET: api/Contacto
         [HttpGet]
-        public IEnumerable<string> Get()
+        public ActionResult<List<Contacto>> Get()
         {
-            return new string[] { "value1", "value2" };
+            var todos = repositorio.LeerTodos();
+            return todos;
         }
 
         // GET: api/Contacto/5
         [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
+        public ActionResult<Contacto> Get(int id)
         {
-            return "value";
+            var Conctacto = repositorio.LeerPorId(id);
+            if (Conctacto == null)
+            {
+                return NotFound();
+            }
+            return Conctacto;
+
         }
 
         // POST: api/Contacto
         [HttpPost]
-        public void Post([FromBody] string value)
+        public IActionResult Post([FromBody] Contacto model)
         {
+            repositorio.Crear(model);
+
+            return Ok();
+
         }
 
         // PUT: api/Contacto/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] Contacto model)
         {
+            var Contacto = repositorio.LeerPorId(model.id);
+            if (Contacto == null)
+            {
+                return NotFound();
+            }
+
+            repositorio.Actualizar(model);
+            return Ok();
         }
+
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            var Conctacto = repositorio.LeerPorId(id);
+            if (Conctacto == null)
+            {
+                return NotFound();
+            }
+            repositorio.Borrar(id);
+            return Ok();
         }
+
     }
-} 
+}
