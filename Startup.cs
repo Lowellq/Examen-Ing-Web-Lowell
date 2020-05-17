@@ -25,6 +25,7 @@ namespace Examen_Ing_Web_Lowell
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            ContactosRepositorio.IniciarBD();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
