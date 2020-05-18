@@ -55,7 +55,7 @@ namespace Examen_Ing_Web_Lowell.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody] Contacto model)
         {
-            var Contacto = repositorio.LeerPorId(model.id);
+            var Contacto = repositorio.LeerPorId(model.Id);
             if (Contacto == null)
             {
                 return NotFound();

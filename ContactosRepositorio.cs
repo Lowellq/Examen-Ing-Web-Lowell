@@ -2,6 +2,11 @@ using System;
 using System.Collections.Generic;
 using Examen_Ing_Web_Lowell.Models;
 
+using Microsoft.Data.Sqlite;
+using System.Linq;
+using Dapper;
+
+
 
 namespace Examen_Ing_Web_Lowell {
 
@@ -13,52 +18,64 @@ public class ContactosRepositorio {
         
     }
 
+
+    private const string ConeccionSQL = @"Data Source=mydb.db;";
     public static void IniciarBD(){
-       using (var connection = new SqliteConnection(@"Data Source=mydb.db;"))
+       using (var connection = new SqliteConnection(ConeccionSQL))
 //       ("" +    new SqliteConnectionStringBuilder()  {        DataSource = "data.db"  }))
         {
             connection.Open();
             connection.Execute(
                 @"CREATE TABLE IF NOT EXISTS Contactos (
-                        id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                        nombre TEXT NULL,
-                        correo TEXT NULL,
-                        edad INT NULL
+                        Id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                        Nombre TEXT NULL,
+                        Correo TEXT NULL,
+                        Edad INT NULL
                 ) ;");
         }
     }
 
-    public int id { get; set; }
-        public string nombre { get; set; }
-        public string correo { get; set; }
-        public int edad { get; set; }
-
-
-
-
         internal List<Contacto> LeerTodos()
         {
-            throw new NotImplementedException();
+             using(var con = new SqliteConnection(ConeccionSQL)){
+
+                return con.Query<Contacto>("SELECT Id, Nombre, Correo, Edad FROM Contactos").ToList();
+            }
+
         }
 
         internal Contacto LeerPorId(int id)
         {
-            throw new NotImplementedException();
+            using(var con = new SqliteConnection(ConeccionSQL)){
+                return con.Query<Contacto>("SELECT Id, Nombre, Correo, Edad FROM Contactos WHERE Id = @Id " , new { Id = id }).FirstOrDefault();
+
+            }
+
         }
 
         internal void Crear(Contacto model)
         {
-            throw new NotImplementedException();
+              using(var con = new SqliteConnection(ConeccionSQL)){
+                con.Execute("INSERT INTO Contactos ( Nombre, Correo, Edad) VALUES ( @Nombre, @Correo, @Edad ) " , model);
+              }
+
         }
 
         internal void Actualizar(Contacto model)
         {
-            throw new NotImplementedException();
+              using(var con = new SqliteConnection(ConeccionSQL)){
+                 con.Execute("UPDATE Contactos SET  Nombre = @Nombre , Correo = @Correo, Edad = @Edad WHERE Id = @Id ", model);
+            }
+
         }
 
         internal void Borrar(int id)
         {
-            throw new NotImplementedException();
+             using(var con = new SqliteConnection(ConeccionSQL)){
+                con.Execute("DELETE FROM Contactos WHERE Id = @Id "
+                    , new { Id = id });
+             }        
+
         }
     }
 
